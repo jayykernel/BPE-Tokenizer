@@ -46,3 +46,16 @@ sequences = [
     ["l", "o", "w", "e", "r"],
 ]
 sequences, merges = train_bpe(sequences, 2)
+def build_vocab(sequences, merges):
+    vocab = set()
+    for sequence in sequences:
+        vocab.update(sequence)
+    for first, second in merges:
+        vocab.add(first)
+        vocab.add(second)
+        vocab.add(first + second)
+    sorted_tokens = sorted(vocab)
+    return {
+        token: token_id
+        for token_id, token in enumerate(sorted_tokens)
+    }
