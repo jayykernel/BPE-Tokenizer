@@ -9,19 +9,3 @@ def tokens_to_ids(tokens, vocab):
 def encode(text, merges, vocab):
     tokens = apply_merges(text, merges)
     return tokens_to_ids(tokens, vocab)
-from mini_bpe.encoder import encode
-merges = [
-    ("l", "o"),
-    ("lo", "w"),
-]
-vocab = {
-    "l": 0,
-    "o": 1,
-    "w": 2,
-    "e": 3,
-    "r": 4,
-    "lo": 5,
-    "low": 6,
-}
-ids = encode("lower", merges, vocab)
-print(ids)
