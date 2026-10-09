@@ -4,6 +4,8 @@ from mini_bpe.trainer import (
     merge_pair,
     train_bpe,
 )
+
+
 def test_count_pairs():
     sequences = [
         ["l", "o", "w"],
@@ -12,6 +14,8 @@ def test_count_pairs():
     counts = count_pairs(sequences)
     assert counts[("l", "o")] == 2
     assert counts[("o", "w")] == 2
+
+
 def test_get_best_pair():
     counts = {
         ("l", "o"): 5,
@@ -19,10 +23,14 @@ def test_get_best_pair():
         ("w", "e"): 1,
     }
     assert get_best_pair(counts) == ("l", "o")
+
+
 def test_merge_pair():
     sequence = ["l", "o", "w"]
     result = merge_pair(sequence, ("l", "o"))
     assert result == ["lo", "w"]
+
+
 def test_train_bpe():
     sequences = [
         ["l", "o", "w"],
