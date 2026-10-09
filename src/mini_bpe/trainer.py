@@ -1,6 +1,9 @@
 from collections import Counter
+
 Pair = tuple[str, str]
 Sequence = list[str]
+
+
 def count_pairs(sequences: list[Sequence]) -> Counter[Pair]:
     counts: Counter[Pair] = Counter()
     for sequence in sequences:
@@ -8,6 +11,8 @@ def count_pairs(sequences: list[Sequence]) -> Counter[Pair]:
             pair = (sequence[index], sequence[index + 1])
             counts[pair] += 1
     return counts
+
+
 def get_best_pair(pair_counts: Counter[Pair]) -> Pair | None:
     if not pair_counts:
         return None
@@ -19,6 +24,8 @@ def get_best_pair(pair_counts: Counter[Pair]) -> Pair | None:
             pair[1],
         ),
     )
+
+
 def merge_pair(sequence: Sequence, pair: Pair) -> Sequence:
     first, second = pair
     merged: Sequence = []
@@ -35,6 +42,8 @@ def merge_pair(sequence: Sequence, pair: Pair) -> Sequence:
             merged.append(sequence[index])
             index += 1
     return merged
+
+
 def train_bpe(
     sequences: list[Sequence],
     num_merges: int,
@@ -49,11 +58,10 @@ def train_bpe(
         if best_pair is None:
             break
         merges.append(best_pair)
-        sequences = [
-            merge_pair(sequence, best_pair)
-            for sequence in sequences
-        ]
+        sequences = [merge_pair(sequence, best_pair) for sequence in sequences]
     return sequences, merges
+
+
 def build_vocab(
     initial_symbols: set[str],
     merges: list[Pair],
@@ -63,7 +71,4 @@ def build_vocab(
         vocab.add(first)
         vocab.add(second)
         vocab.add(first + second)
-    return {
-        token: token_id
-        for token_id, token in enumerate(sorted(vocab))
-    }
+    return {token: token_id for token_id, token in enumerate(sorted(vocab))}

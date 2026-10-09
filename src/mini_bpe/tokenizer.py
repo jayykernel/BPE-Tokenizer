@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+
 from mini_bpe.decoder import decode as decode_ids
 from mini_bpe.encoder import encode as encode_text
 from mini_bpe.trainer import (
@@ -7,12 +8,16 @@ from mini_bpe.trainer import (
     build_vocab,
     train_bpe,
 )
+
+
 class BPETokenizer:
     """Educational character-level BPE tokenizer."""
+
     def __init__(self) -> None:
         self.vocab: dict[str, int] = {}
         self.merges: list[Pair] = []
         self.trained = False
+
     def train(self, corpus: str, vocab_size: int) -> None:
         if not corpus:
             raise ValueError("Training corpus must not be empty")
@@ -30,12 +35,15 @@ class BPETokenizer:
         self.vocab = build_vocab(initial_symbols, merges)
         self.merges = merges
         self.trained = True
+
     def encode(self, text: str) -> list[int]:
         self._check_trained()
         return encode_text(text, self.merges, self.vocab)
+
     def decode(self, ids: list[int]) -> str:
         self._check_trained()
         return decode_ids(ids, self.vocab)
+
     def save(self, path: str | Path) -> None:
         self._check_trained()
         data = {
@@ -50,8 +58,9 @@ class BPETokenizer:
             json.dumps(data, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
     @classmethod
-    def load(cls, path: str | Path) -> "BPETokenizer":
+    def load(cls, path: str | Path) -> BPETokenizer:
         source = Path(path)
         data = json.loads(source.read_text(encoding="utf-8"))
         if data.get("format_version") != 1:
@@ -60,19 +69,19 @@ class BPETokenizer:
             raise ValueError("Unsupported tokenizer algorithm")
         tokenizer = cls()
         tokenizer.vocab = {
-            str(token): int(token_id)
-            for token, token_id in data["vocab"].items()
+            str(token): int(token_id) for token, token_id in data["vocab"].items()
         }
         tokenizer.merges = [
-            (str(first), str(second))
-            for first, second in data["merges"]
+            (str(first), str(second)) for first, second in data["merges"]
         ]
         tokenizer._validate_loaded_state()
         tokenizer.trained = True
         return tokenizer
+
     def _check_trained(self) -> None:
         if not self.trained:
             raise RuntimeError("Tokenizer has not been trained")
+
     def _validate_loaded_state(self) -> None:
         ids = list(self.vocab.values())
         if len(ids) != len(set(ids)):
