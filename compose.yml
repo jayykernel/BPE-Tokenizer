@@ -1,0 +1,4 @@
+services:
+  tokenizer:
+    build: .
+    image: bpe-tokenizer
