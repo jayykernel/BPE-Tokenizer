@@ -1,13 +1,12 @@
 from collections import Counter
 
-BytePair = tuple[int, int]
-ByteSequence = list[int]
+Token = bytes
+Pair = tuple[Token, Token]
+Sequence = list[Token]
 
 
-def count_byte_pairs(
-    sequences: list[ByteSequence],
-) -> Counter[BytePair]:
-    counts: Counter[BytePair] = Counter()
+def count_pairs(sequences: list[Sequence]) -> Counter[Pair]:
+    counts: Counter[Pair] = Counter()
 
     for sequence in sequences:
         for index in range(len(sequence) - 1):
@@ -16,9 +15,7 @@ def count_byte_pairs(
     return counts
 
 
-def get_best_byte_pair(
-    counts: Counter[BytePair],
-) -> BytePair | None:
+def get_best_pair(counts: Counter[Pair]) -> Pair | None:
     if not counts:
         return None
 
@@ -32,12 +29,9 @@ def get_best_byte_pair(
     )
 
 
-def merge_byte_pair(
-    sequence: ByteSequence,
-    pair: BytePair,
-) -> ByteSequence:
+def merge_pair(sequence: Sequence, pair: Pair) -> Sequence:
     first, second = pair
-    merged: ByteSequence = []
+    merged: Sequence = []
     index = 0
 
     while index < len(sequence):
@@ -46,12 +40,34 @@ def merge_byte_pair(
             and sequence[index] == first
             and sequence[index + 1] == second
         ):
-            # A merged token needs a distinct token identity.
-            # Therefore, this simple list-of-integers function
-            # cannot represent merged tokens as single integers.
-            raise NotImplementedError("Use the token-sequence representation below")
-
-        merged.append(sequence[index])
-        index += 1
+            merged.append(first + second)
+            index += 2
+        else:
+            merged.append(sequence[index])
+            index += 1
 
     return merged
+
+
+def train_bpe(
+    sequences: list[Sequence],
+    num_merges: int,
+) -> tuple[list[Sequence], list[Pair]]:
+    if num_merges < 0:
+        raise ValueError("num_merges must be non-negative")
+
+    sequences = [sequence.copy() for sequence in sequences]
+    merges: list[Pair] = []
+
+    for _ in range(num_merges):
+        counts = count_pairs(sequences)
+        best_pair = get_best_pair(counts)
+
+        if best_pair is None:
+            break
+
+        merges.append(best_pair)
+
+        sequences = [merge_pair(sequence, best_pair) for sequence in sequences]
+
+    return sequences, merges
