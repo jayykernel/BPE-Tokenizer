@@ -1,7 +1,7 @@
 [project]
 name = "bpe-tokenizer"
 version = "0.1.0"
-description = "Add your description here"
+description = "Compact Python implementation of a byte-level BPE tokenizer for training, encoding, and decoding text efficiently. Includes a CLI, benchmark metrics, and lightweight NLP tooling for custom subword vocabulary experiments."
 readme = "README.md"
 authors = [
     { name = "jayanithyan", email = "srisarankamalyarns83@gmail.com" }
